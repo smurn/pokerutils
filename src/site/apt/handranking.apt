@@ -1,0 +1,69 @@
+~~ Licensed to the Apache Software Foundation (ASF) under one
+~~ or more contributor license agreements.  See the NOTICE file
+~~ distributed with this work for additional information
+~~ regarding copyright ownership.  The ASF licenses this file
+~~ to you under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance
+~~ with the License.  You may obtain a copy of the License at
+~~ 
+~~   http://www.apache.org/licenses/LICENSE-2.0
+~~ 
+~~ Unless required by applicable law or agreed to in writing,
+~~ software distributed under the License is distributed on an
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied.  See the License for the
+~~ specific language governing permissions and limitations
+~~ under the License.
+
+
+ -----
+ Hand Ranking
+ -----
+ Stefan C. Mueller
+ -----
+ 2010-12-11
+ -----
+ 
+Hand Ranking
+
+  Ranking poker hands can be done in many ways. The common use-case will
+most likely look like this:
+
+  Given a set of players, each with a different set of cards (of which
+some might be shared), find out who has the best hand. Sometimes we might
+also like to get additional information, like which 5 cards formed the best
+hand for some player (maybe to highlight them in a GUI or something) and
+we would usually also like to know what kind of hand that was (Pair, 
+Full-House, ...).
+
+  One common approch is to assign a number to each player that represents
+the strengh of his cards. The highest number wins. Equal number share
+the pot. This works, but offers none of the additional information we might
+want.
+
+  A slightly more elaborate way might be to produce, besides the number from
+above, some additional information regarding his hand. Like what kind of
+hand it is. But if we compare the hands of several players this might be
+insufficient. Assume that the information of two players contain "Pair",
+but one of them wins because of a better kicker. If a message is displayed
+to the user saying 'A (pair) won against B (pair)' than that is rather confusing
+for newbies (and experts would instantly miss the information regarding the
+kicker). Of course kicker information can be included, but then we get
+very verbose messages like 'A (pair of aces, king, nine and threes as kicker)
+won against 'B (three of a kind sevens, with ace and queen kicker). Clearly
+additional logic is required to get exactly as much information as required
+for a nice log message.
+
+  I propose to separate the different tasks that are involved.
+
+  * Find the best hand in a set of cards.
+
+  * Extract information about that hand.
+
+  * Compare hands among each other.
+
+  * Extract information from such a comparison.
+
+  Short-cuts for special use-casescan still be implemented for performance 
+reasons.
+
