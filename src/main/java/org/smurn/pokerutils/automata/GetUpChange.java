@@ -76,6 +76,9 @@ public final class GetUpChange implements Change {
      */
     @Override
     public Table apply(final Table table) {
+        if (table == null) {
+            throw new NullArgumentException("table");
+        }
         if (!table.isSealed()) {
             throw new IllegalArgumentException("Table is not sealed.");
         }

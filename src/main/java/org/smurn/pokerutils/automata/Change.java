@@ -43,7 +43,7 @@ import org.smurn.pokerutils.Table;
  * from the input table. An example is {@link GetUpChange} which includes
  * the player that left, even if that could easily received from the table.
  * But for log messages knowing player who left is very relevant. Without it
- * the log function would require the table in addition to the change. The 
+ * the log function would require the table in addition to the change. The
  * goal is to have self-contained changes.
  * </p>
  */
