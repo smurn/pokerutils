@@ -33,7 +33,9 @@ public final class Seat implements Sealable {
     /** Chips this seat has bet in the current betting round. */
     private int bet;
     /** Private cards of this player. */
-    private List<Card> cards;
+    private List<Card> holeCards;
+    /** Publically visible cards of this player. */
+    private List<Card> visibleCards;
     /** If the private cards are visible. */
     private boolean cardsVisible;
     /** True if this object is immutable. */
@@ -43,7 +45,8 @@ public final class Seat implements Sealable {
      * Creates an empty seat, with no stake, bet or cards.
      */
     public Seat() {
-        cards = new ArrayList<Card>();
+        holeCards = new ArrayList<Card>();
+        visibleCards = new ArrayList<Card>();
     }
 
     /**
@@ -59,7 +62,8 @@ public final class Seat implements Sealable {
         this.stake = seat.stake;
         this.bet = seat.bet;
         this.cardsVisible = seat.cardsVisible;
-        this.cards = new ArrayList<Card>(seat.cards);
+        this.holeCards = new ArrayList<Card>(seat.holeCards);
+        this.visibleCards = new ArrayList<Card>(seat.visibleCards);
     }
 
     /**
@@ -88,11 +92,22 @@ public final class Seat implements Sealable {
 
     /**
      * Gets the secret poket cards of that seat.
-     * @return Poket cards of that seat. If the seat has no cards, the
-     * list will be empty. Is never {@code null}. List is mutable.
+     * @return Poket cards of this seat. If the seat has no cards, the
+     * list will be empty. Is never {@code null}. List is mutable, until
+     * the seat is sealed.
      */
-    public List<Card> getCards() {
-        return cards;
+    public List<Card> getHoleCards() {
+        return this.holeCards;
+    }
+
+    /**
+     * Gets the visible cards of that seat.
+     * @return Visible cards of this seat. If the seat has no cards, the
+     * list will be empty. Is never {@code null}. List is mutable, until
+     * the seat is sealed.
+     */
+    public List<Card> getVisibleCards() {
+        return this.visibleCards;
     }
 
     /**
@@ -159,7 +174,10 @@ public final class Seat implements Sealable {
     @Override
     public void seal() {
         this.sealed = true;
-        this.cards = Collections.unmodifiableList(new ArrayList<Card>(cards));
+        this.holeCards = Collections.unmodifiableList(
+                new ArrayList<Card>(this.holeCards));
+        this.visibleCards = Collections.unmodifiableList(
+                new ArrayList<Card>(this.visibleCards));
     }
 
     @Override

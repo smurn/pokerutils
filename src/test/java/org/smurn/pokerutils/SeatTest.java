@@ -69,15 +69,33 @@ public class SeatTest extends SealableTest {
         assertTrue("copy doesn't preserve visiblity.", copy.isCardsVisible());
     }
 
+    /**
+     * Copy preserves data.
+     */
     @Test
-    public void copyPreservesCards() {
+    public void copyPreservesHoleCards() {
         Seat seat = new Seat();
-        seat.getCards().add(Card.SA);
+        seat.getHoleCards().add(Card.SA);
         Seat copy = new Seat(seat);
         assertEquals("copy doesn't preserve the cards.", Arrays.asList(Card.SA),
-                copy.getCards());
+                copy.getHoleCards());
     }
 
+    /**
+     * Copy preserves data.
+     */
+    @Test
+    public void copyPreservesVisibleCards() {
+        Seat seat = new Seat();
+        seat.getVisibleCards().add(Card.SA);
+        Seat copy = new Seat(seat);
+        assertEquals("copy doesn't preserve the cards.", Arrays.asList(Card.SA),
+                copy.getVisibleCards());
+    }
+
+    /**
+     * Copy preserves data.
+     */
     @Test
     public void copyPreservesPlayer() {
         Player mock = mock(Player.class);
