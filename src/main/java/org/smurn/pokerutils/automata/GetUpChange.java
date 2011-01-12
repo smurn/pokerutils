@@ -22,27 +22,27 @@ import org.smurn.pokerutils.Seat;
 import org.smurn.pokerutils.Table;
 
 /**
- * Change occuring if a player its down at a table.
+ * Change occuring if a player is leaving a table.
  */
 @Immutable
-public final class SitDownChange implements Change {
+public final class GetUpChange implements Change {
 
-    /** Player that sits down. */
+    /** Player that is getting up. */
     private final Player player;
-    /** Seat at which the player sits down. */
+    /** Seat from which the player is leaving. */
     private final int seatNr;
-    /** Number of chips the player brings with him. */
+    /** Number of chips the player takes with him. */
     private final int stake;
 
     /**
      * Creates an instance.
-     * @param player Player that sits down. Must not be {@code null}.
-     * @param seatNr Seat number at which the player sits down. Must be
+     * @param player Player that is leaving. Must not be {@code null}.
+     * @param seatNr Seat number from which the player is getting up. Must be
      * non-negative.
-     * @param stake Number of chips the player brings to the table. Must be
+     * @param stake Number of chips the player takes with him. Must be
      * non-negative.
      */
-    public SitDownChange(final Player player, final int seatNr,
+    public GetUpChange(final Player player, final int seatNr,
             final int stake) {
         if (player == null) {
             throw new NullArgumentException("player");
@@ -60,11 +60,13 @@ public final class SitDownChange implements Change {
 
     /**
      * Applies this change to a table.
-     * This sets the seat's player and stake field.
+     * This sets the seat's player field to {@code null} and the stake field
+     * to 0.
      * @param table Table to apply this change to. Must not be {@code null}.
      * @return Table with the change applied. Is never {@code null}.
      * @throws IncompatibleTableException If the given table has no such seat
-     * number, the seat is occupied or the stake at that seat is not zero.
+     * number, the player is not on that seat, or the stake is different from
+     * the stake from this change.
      */
     @Override
     public Table apply(final Table table) {
@@ -76,37 +78,38 @@ public final class SitDownChange implements Change {
                     + "seat " + getSeatNr() + ".");
         }
         Seat seat = table.getSeat(this.seatNr);
-        if (seat.getPlayer() != null) {
-            throw new IncompatibleTableException("The seat " + this.seatNr
-                    + " is occupied.");
+        if (seat.getPlayer() != this.player) {
+            throw new IncompatibleTableException("The player " + this.player
+                    + " is not sitting on seat " + this.seatNr + ".");
         }
-        if (seat.getStake() != 0) {
-            throw new IncompatibleTableException("On the seat " + this.seatNr
-                    + " is some stake leftover.");
+        if (seat.getStake() != this.stake) {
+            throw new IncompatibleTableException("The seat contains "
+                    + seat.getStake() + " chips, cannot leave with "
+                    + this.stake + ".");
         }
 
 
         Table after = new Table(table);
 
         Seat afterSeat = after.getSeat(this.seatNr);
-        afterSeat.setPlayer(this.player);
-        afterSeat.setStake(this.stake);
+        afterSeat.setPlayer(null);
+        afterSeat.setStake(0);
 
         after.seal();
         return after;
     }
 
     /**
-     * Gets the player that is sitting down.
-     * @return The player that is sitting down. Is never {@code null}.
+     * Gets the player that is leaving.
+     * @return The player that is leaving. Is never {@code null}.
      */
     public Player getPlayer() {
         return player;
     }
 
     /**
-     * Gets the seat number on which the player is sitting down.
-     * @return The seat number on which the player is sitting down. Is
+     * Gets the seat number from which the player is leaving.
+     * @return The seat number on which the player is leaving. Is
      * non-negative.
      */
     public int getSeatNr() {
@@ -114,8 +117,8 @@ public final class SitDownChange implements Change {
     }
 
     /**
-     * Gets the chips the player brings to the table.
-     * @return The chips the player brings to the table. Is non-negative.
+     * Gets the chips the player takes from to the table.
+     * @return The chips the player takes from the table. Is non-negative.
      */
     public int getStake() {
         return stake;
