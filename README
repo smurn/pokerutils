@@ -1,0 +1,7 @@
+org.smurn.pokerutils
+====================
+
+This library provides classes that are commonly used by poker applications.
+This includes enums for cards, suit and rank, hand evaluators and poker table
+simuators.
+
