@@ -16,6 +16,7 @@
 package org.smurn.pokerutils.automata;
 
 import org.junit.Test;
+import org.smurn.pokerutils.Card;
 import org.smurn.pokerutils.Player;
 import org.smurn.pokerutils.Table;
 import static org.mockito.Mockito.*;
@@ -33,12 +34,12 @@ public class SitDownChangeTest {
     public void setsPlayer() {
         Table before = new Table(10);
         before.seal();
-        
+
         Player player = mock(Player.class);
         SitDownChange change = new SitDownChange(player, 4, 123);
-        
+
         Table after = change.apply(before);
-        
+
         assertSame("player not set", player, after.getSeat(4).getPlayer());
     }
 
@@ -49,12 +50,12 @@ public class SitDownChangeTest {
     public void setsStake() {
         Table before = new Table(10);
         before.seal();
-        
+
         Player player = mock(Player.class);
         SitDownChange change = new SitDownChange(player, 4, 123);
-        
+
         Table after = change.apply(before);
-        
+
         assertSame("stake not set", 123, after.getSeat(4).getStake());
     }
 
@@ -67,10 +68,10 @@ public class SitDownChangeTest {
         Player playerA = mock(Player.class);
         before.getSeat(4).setPlayer(playerA);
         before.seal();
-        
+
         Player playerB = mock(Player.class);
         SitDownChange change = new SitDownChange(playerB, 4, 123);
-        
+
         change.apply(before);
     }
 
@@ -82,52 +83,82 @@ public class SitDownChangeTest {
         Table before = new Table(10);
         before.getSeat(4).setStake(1);
         before.seal();
-        
+
         Player playerB = mock(Player.class);
         SitDownChange change = new SitDownChange(playerB, 4, 123);
         change.apply(before);
     }
-    
+
+    /**
+     * Tests that one cannot sit down at a seat whith hole cards.
+     */
+    @Test(expected = IncompatibleTableException.class)
+    public void holeCards() {
+        Table before = new Table(10);
+        before.getSeat(7).getHoleCards().add(Card.S2);
+        before.seal();
+
+        Player player = mock(Player.class);
+        SitDownChange change = new SitDownChange(player, 7, 123);
+
+        change.apply(before);
+    }
+
+    /**
+     * Tests that one cannot sit down at a seat whith visible cards.
+     */
+    @Test(expected = IncompatibleTableException.class)
+    public void visibleCards() {
+        Table before = new Table(10);
+        before.getSeat(7).getVisibleCards().add(Card.S2);
+        before.seal();
+
+        Player player = mock(Player.class);
+        SitDownChange change = new SitDownChange(player, 7, 123);
+
+        change.apply(before);
+    }
+
     /**
      * Tests that one cannot sit down at a seat that does not exist.
      */
     @Test(expected = IncompatibleTableException.class)
-    public void unexistingSeat(){
+    public void unexistingSeat() {
         Table before = new Table(7);
         before.seal();
-        
+
         Player player = mock(Player.class);
         SitDownChange change = new SitDownChange(player, 7, 123);
-        
+
         change.apply(before);
     }
-    
+
     /**
      * Tests that only sealed tables are accepted. 
      */
-    @Test(expected=IllegalArgumentException.class)
-    public void requiresSealed(){
+    @Test(expected = IllegalArgumentException.class)
+    public void requiresSealed() {
         Table unsealed = new Table(10);
-        
+
         Player player = mock(Player.class);
         SitDownChange change = new SitDownChange(player, 7, 123);
-        
+
         change.apply(unsealed);
     }
-    
+
     /**
      * The produced table must be sealed.
      */
     @Test
-    public void producesSealed(){
+    public void producesSealed() {
         Table before = new Table(10);
         before.seal();
-        
+
         Player player = mock(Player.class);
         SitDownChange change = new SitDownChange(player, 4, 123);
-        
+
         Table after = change.apply(before);
-        
+
         assertTrue("Returned table is not sealed.", after.isSealed());
     }
 }

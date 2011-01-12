@@ -16,6 +16,7 @@
 package org.smurn.pokerutils.automata;
 
 import org.junit.Test;
+import org.smurn.pokerutils.Card;
 import org.smurn.pokerutils.Player;
 import org.smurn.pokerutils.Table;
 import static org.mockito.Mockito.*;
@@ -119,6 +120,40 @@ public class GetUpChangeTest {
         before.seal();
 
         GetUpChange change = new GetUpChange(player, 7, 123);
+
+        change.apply(before);
+    }
+
+    /**
+     * Test that the seat cannot have hole cards.
+     */
+    @Test(expected = IncompatibleTableException.class)
+    public void holeCards() {
+        Table before = new Table(10);
+        Player player = mock(Player.class);
+        before.getSeat(2).setPlayer(player);
+        before.getSeat(2).setStake(44);
+        before.getSeat(2).getHoleCards().add(Card.S2);
+        before.seal();
+
+        GetUpChange change = new GetUpChange(player, 2, 44);
+
+        change.apply(before);
+    }
+
+    /**
+     * Test that the seat cannot have visible cards.
+     */
+    @Test(expected = IncompatibleTableException.class)
+    public void visibleCards() {
+        Table before = new Table(10);
+        Player player = mock(Player.class);
+        before.getSeat(2).setPlayer(player);
+        before.getSeat(2).setStake(44);
+        before.getSeat(2).getVisibleCards().add(Card.S2);
+        before.seal();
+
+        GetUpChange change = new GetUpChange(player, 2, 44);
 
         change.apply(before);
     }

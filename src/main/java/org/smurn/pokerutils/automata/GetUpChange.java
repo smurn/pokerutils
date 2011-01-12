@@ -64,9 +64,15 @@ public final class GetUpChange implements Change {
      * to 0.
      * @param table Table to apply this change to. Must not be {@code null}.
      * @return Table with the change applied. Is never {@code null}.
-     * @throws IncompatibleTableException If the given table has no such seat
-     * number, the player is not on that seat, or the stake is different from
-     * the stake from this change.
+     * @throws IncompatibleTableException If the following conditions are not
+     * met by the given table:
+     * <ul>
+     * <li>The table must have a seat with the seat number of this change.</li>
+     * <li>The player in the seat matches the one of this change.</li>
+     * <li>The stake of the seat is equal to the stake defined in this change.
+     * </li>
+     * <li>The seat has no hole or public cards.</li>
+     * </ul>
      */
     @Override
     public Table apply(final Table table) {
@@ -87,8 +93,11 @@ public final class GetUpChange implements Change {
                     + seat.getStake() + " chips, cannot leave with "
                     + this.stake + ".");
         }
-
-
+        if (!seat.getHoleCards().isEmpty()
+                || !seat.getVisibleCards().isEmpty()) {
+            throw new IncompatibleTableException("On the seat " + this.seatNr
+                    + " are cards.");
+        }
         Table after = new Table(table);
 
         Seat afterSeat = after.getSeat(this.seatNr);

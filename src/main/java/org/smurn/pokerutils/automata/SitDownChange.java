@@ -63,8 +63,14 @@ public final class SitDownChange implements Change {
      * This sets the seat's player and stake field.
      * @param table Table to apply this change to. Must not be {@code null}.
      * @return Table with the change applied. Is never {@code null}.
-     * @throws IncompatibleTableException If the given table has no such seat
-     * number, the seat is occupied or the stake at that seat is not zero.
+     * @throws IncompatibleTableException If the following conditions are not
+     * met by the given table:
+     * <ul>
+     * <li>The table must have a seat with the seat number of this change.</li>
+     * <li>There is no player at that seat.</li>
+     * <li>The stake of that seat is 0.</li>
+     * <li>The seat has no hole or public cards.</li>
+     * </ul>
      */
     @Override
     public Table apply(final Table table) {
@@ -83,6 +89,11 @@ public final class SitDownChange implements Change {
         if (seat.getStake() != 0) {
             throw new IncompatibleTableException("On the seat " + this.seatNr
                     + " is some stake leftover.");
+        }
+        if (!seat.getHoleCards().isEmpty()
+                || !seat.getVisibleCards().isEmpty()) {
+            throw new IncompatibleTableException("On the seat " + this.seatNr
+                    + " are cards.");
         }
 
 
