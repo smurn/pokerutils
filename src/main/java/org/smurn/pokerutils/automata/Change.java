@@ -41,10 +41,10 @@ import org.smurn.pokerutils.Table;
  * Furthermore it should contain the information required to describe the
  * 'relevant' aspects of the change. Even if this information could be derived
  * from the input table. An example is {@link GetUpChange} which includes
- * the number of chips the player took with him, even if that will always
- * be identical to his stake. The motivation for this is to make the changes
- * self contained. For a logging or interfacing with account management,
- * the stake from the leaving player is very relevant.
+ * the player that left, even if that could easily received from the table.
+ * But for log messages knowing player who left is very relevant. Without it
+ * the log function would require the table in addition to the change. The 
+ * goal is to have self-contained changes.
  * </p>
  */
 public interface Change {
