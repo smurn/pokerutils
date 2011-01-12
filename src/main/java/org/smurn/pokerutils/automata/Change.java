@@ -20,6 +20,32 @@ import org.smurn.pokerutils.Table;
 
 /**
  * Describes one or more modifications of a table.
+ * <h3>Granularity</h3>
+ * <p>
+ * When designing implementations of this interface there is always a choice of
+ * granularity. One can design for many small changes or one big change.
+ * </p><p>
+ * A change should never 'jump' over an action of a player. If the player makes
+ * a desision then there should not be a change that performs modifications
+ * that happend before and after that decision.
+ * </p><p>
+ * If there is a potential waiting period between two modifications, they should
+ * be separated into individiual changes.
+ * </p>
+ * <h3>Information content</h3>
+ * <p>
+ * Each change must at least contain all the information required to apply it.
+ * Otherwise the {@link #apply(org.smurn.pokerutils.Table)} method cannot
+ * be implemented.
+ * </p><p>
+ * Furthermore it should contain the information required to describe the
+ * 'relevant' aspects of the change. Even if this information could be derived
+ * from the input table. An example is {@link GetUpChange} which includes
+ * the number of chips the player took with him, even if that will always
+ * be identical to his stake. The motivation for this is to make the changes
+ * self contained. For a logging or interfacing with account management,
+ * the stake from the leaving player is very relevant.
+ * </p>
  */
 public interface Change {
 
